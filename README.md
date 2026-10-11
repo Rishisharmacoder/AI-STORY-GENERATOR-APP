@@ -1,56 +1,75 @@
-# Welcome to your Expo app 👋
+# AI Story Generator
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile-first story generator built with Expo, React Native, Expo Router, and OpenRouter. Enter a story idea or choose an example prompt to generate a story, read it in the app, and revisit saved stories.
 
-## Get started
+## Requirements
 
-1. Install dependencies
+- Bun (the repository includes `bun.lock`)
+- An OpenRouter API key with access to the configured model
+- Expo-compatible Android or iOS device/emulator, or a browser for the web app
+
+## Setup
+
+1. Install dependencies:
 
    ```bash
-   npm install
+   bun install
    ```
 
-2. Start the app
+2. Create a `.env` file in the project root and add your OpenRouter key:
+
+   ```env
+   OPENROUTER_API_KEY=your_openrouter_api_key
+   ```
+
+   Keep this key private. Do not use an `EXPO_PUBLIC_` prefix or commit the `.env` file.
+
+3. Start the Expo development server:
 
    ```bash
-   npx expo start
+   bunx expo start
    ```
 
-In the output, you'll find options to open the app in a
+   Open the app on a device or emulator using the options printed by Expo CLI.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Using the app
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+1. Enter a story idea, or tap one of the example prompts.
+2. Tap **Generate Story** and wait for generation to finish.
+3. Read the generated story. It is saved locally on the device.
+4. Return to the home screen to open the latest saved story with **Go to Story**, or select a story from **Your Stories**.
 
-## Get a fresh project
+## Project structure
 
-When you're ready, run:
-
-```bash
-npm run reset-project
+```text
+src/
+  app/
+    _layout.tsx          Expo Router stack and app-wide status bar
+    index.tsx            Prompt input, generation, and saved story list
+    story.tsx            Saved story reader
+    api/
+      generate+api.ts    Server endpoint that calls OpenRouter
+  constant/
+    index.ts             Example prompts
+    theme.ts             App colors and theme
+  lib/
+    storage.ts           AsyncStorage helpers for saved stories
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Story generation and deployment
 
-### Other setup steps
+The `/api/generate` Expo Router API route calls OpenRouter using `OPENROUTER_API_KEY` and the `openai/gpt-4o-mini` model. The model returns a structured story with a title and paragraphs; the app stores the result using AsyncStorage.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+API routes run on a server, not inside the native Android or iOS app. They work with the Expo development server during development, but production requires deploying the API route to a server environment that supports Expo Router API routes. Configure the OpenRouter key as a server-side environment variable on that deployment. Do not bundle the key into a native app.
 
-## Learn more
+## Useful commands
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+bunx expo start                 # Start the development server
+bunx expo start --android       # Start and open Android
+bunx expo start --ios           # Start and open iOS
+bunx expo start --web           # Start the web app
+bunx expo lint                  # Run ESLint
+bunx tsc --noEmit               # Type-check TypeScript
+bunx expo install --check       # Check Expo package compatibility
+```
